@@ -9,6 +9,21 @@ http.createServer((req, res) => res.end('OK')).listen(PORT, () => {
   console.log(`✅ Health check server on port ${PORT}`);
 });
 
+// ─── Self-ping every 4 minutes to prevent Render spin-down ───────────────────
+const SELF_URL = process.env.SELF_URL || `http://localhost:${PORT}`;
+const BACKEND_URL = (process.env.API_BASE_URL || 'http://localhost:3000') + '/health';
+
+function ping(url) {
+  axios.get(url, { timeout: 10000 })
+    .then(() => console.log(`✅ Ping OK: ${url}`))
+    .catch(err => console.warn(`⚠️ Ping failed: ${url} — ${err.message}`));
+}
+
+setInterval(() => {
+  ping(SELF_URL);
+  ping(BACKEND_URL);
+}, 4 * 60 * 1000); // every 4 minutes
+
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
 const GROUP_CHAT_ID = process.env.TELEGRAM_GROUP_CHAT_ID;
