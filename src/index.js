@@ -1,6 +1,13 @@
 require('dotenv').config();
 const TelegramBot = require('node-telegram-bot-api');
 const axios = require('axios');
+const http = require('http');
+
+// ─── Keep-alive HTTP server for Render ───────────────────────────────────────
+const PORT = process.env.PORT || 3001;
+http.createServer((req, res) => res.end('OK')).listen(PORT, () => {
+  console.log(`✅ Health check server on port ${PORT}`);
+});
 
 const TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const ADMIN_CHAT_ID = process.env.ADMIN_CHAT_ID;
